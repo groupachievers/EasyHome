@@ -1,0 +1,252 @@
+[
+  {
+    "id": "lagos-ikoyi-court",
+    "title": "Ikoyi Court Residences",
+    "price": "NGN 4.8M / year",
+    "beds": 3,
+    "baths": 3,
+    "size": 146,
+    "rentalType": "3 Bedroom Flat",
+    "area": "Ikoyi, Lagos",
+    "distance": "1.2 km",
+    "availability": "Ready to move in",
+    "isAvailable": true,
+    "hasSolar": true,
+    "growthPrediction": "Projected rental growth of 17% in the next 2 to 3 years.",
+    "landlord": {
+      "name": "Adebayo Akinola",
+      "phone": "08031234567",
+      "avatarLabel": "AA"
+    },
+    "gallery": ["Exterior", "Living Room", "Primary Bedroom"],
+    "coordinate": {
+      "latitude": 6.4549,
+      "longitude": 3.4377
+    }
+  },
+  {
+    "id": "lagos-yaba-lofts",
+    "title": "Yaba Smart Lofts",
+    "price": "NGN 2.1M / year",
+    "beds": 2,
+    "baths": 2,
+    "size": 88,
+    "rentalType": "2 Bedroom Flat",
+    "area": "Yaba, Lagos",
+    "distance": "2.8 km",
+    "availability": "Available after current repaint",
+    "isAvailable": true,
+    "hasSolar": false,
+    "growthPrediction": "Expected appreciation of 14% over the next 2 to 3 years.",
+    "landlord": {
+      "name": "Chinelo Okafor",
+      "phone": "08144567890",
+      "avatarLabel": "CO"
+    },
+    "gallery": ["Street View", "Lounge", "Kitchen"],
+    "coordinate": {
+      "latitude": 6.5157,
+      "longitude": 3.3764
+    }
+  },
+  {
+    "id": "abuja-maitama-heights",
+    "title": "Maitama Heights",
+    "price": "NGN 6.5M / year",
+    "beds": 4,
+    "baths": 4,
+    "size": 182,
+    "rentalType": "4 Bedroom Duplex",
+    "area": "Maitama, Abuja",
+    "distance": "0.9 km",
+    "availability": "Viewing open this week",
+    "isAvailable": true,
+    "hasSolar": true,
+    "growthPrediction": "Rental value may rise by 19% in the next 2 to 3 years.",
+    "landlord": {
+      "name": "Ifeanyi Nwosu",
+      "phone": "07023334444",
+      "avatarLabel": "IN"
+    },
+    "gallery": ["Gate", "Main Lounge", "Terrace"],
+    "coordinate": {
+      "latitude": 9.0832,
+      "longitude": 7.4891
+    }
+  },
+  {
+    "id": "abuja-wuse-gardens",
+    "title": "Wuse Garden Flats",
+    "price": "NGN 3.4M / year",
+    "beds": 2,
+    "baths": 2,
+    "size": 96,
+    "rentalType": "2 Bedroom Flat",
+    "area": "Wuse 2, Abuja",
+    "distance": "1.4 km",
+    "availability": "Occupied until August",
+    "isAvailable": false,
+    "hasSolar": true,
+    "growthPrediction": "Likely 13% rental growth in the next 2 to 3 years.",
+    "landlord": {
+      "name": "Mariam Bello",
+      "phone": "09055667788",
+      "avatarLabel": "MB"
+    },
+    "gallery": ["Front Gate", "Dining Space", "Bedroom"],
+    "coordinate": {
+      "latitude": 9.0765,
+      "longitude": 7.4702
+    }
+  },
+  {
+    "id": "ph-gra-bayside",
+    "title": "Bayside GRA Apartments",
+    "price": "NGN 3.9M / year",
+    "beds": 3,
+    "baths": 3,
+    "size": 134,
+    "rentalType": "3 Bedroom Flat",
+    "area": "GRA Phase 2, Port Harcourt",
+    "distance": "1.9 km",
+    "availability": "Ready to move in",
+    "isAvailable": true,
+    "hasSolar": true,
+    "growthPrediction": "Projected 16% rental growth over the next 2 to 3 years.",
+    "landlord": {
+      "name": "Tamuno Peters",
+      "phone": "08199887766",
+      "avatarLabel": "TP"
+    },
+    "gallery": ["Compound", "Family Lounge", "Balcony"],
+    "coordinate": {
+      "latitude": 4.8156,
+      "longitude": 7.0336
+    }
+  },
+  {
+    "id": "ibadan-bodija-court",
+    "title": "Bodija Court Homes",
+    "price": "NGN 1.7M / year",
+    "beds": 2,
+    "baths": 2,
+    "size": 84,
+    "rentalType": "2 Bedroom Flat",
+    "area": "Bodija, Ibadan",
+    "distance": "2.3 km",
+    "availability": "Available for inspection",
+    "isAvailable": true,
+    "hasSolar": false,
+    "growthPrediction": "Expected 12% demand growth in the next 2 to 3 years.",
+    "landlord": {
+      "name": "Yetunde Oladipo",
+      "phone": "08066778899",
+      "avatarLabel": "YO"
+    },
+    "gallery": ["Driveway", "Living Area", "Kitchen"],
+    "coordinate": {
+      "latitude": 7.4234,
+      "longitude": 3.9236
+    }
+  },
+  {
+    "id": "kano-nassarawa-terrace",
+    "title": "Nassarawa Terrace",
+    "price": "NGN 1.2M / year",
+    "beds": 2,
+    "baths": 2,
+    "size": 79,
+    "rentalType": "2 Bedroom Flat",
+    "area": "Nassarawa, Kano",
+    "distance": "3.1 km",
+    "availability": "Available now",
+    "isAvailable": true,
+    "hasSolar": true,
+    "growthPrediction": "Estimated 11% rise in value within the next 2 to 3 years.",
+    "landlord": {
+      "name": "Aisha Garba",
+      "phone": "08122334455",
+      "avatarLabel": "AG"
+    },
+    "gallery": ["Entrance", "Sitting Room", "Bathroom"],
+    "coordinate": {
+      "latitude": 12.0022,
+      "longitude": 8.592
+    }
+  },
+  {
+    "id": "enugu-independence-view",
+    "title": "Independence View",
+    "price": "NGN 1.9M / year",
+    "beds": 2,
+    "baths": 2,
+    "size": 91,
+    "rentalType": "2 Bedroom Flat",
+    "area": "Independence Layout, Enugu",
+    "distance": "1.7 km",
+    "availability": "Occupied, waitlist open",
+    "isAvailable": false,
+    "hasSolar": false,
+    "growthPrediction": "Potential 15% rental growth in the next 2 to 3 years.",
+    "landlord": {
+      "name": "Nkem Eze",
+      "phone": "07044556677",
+      "avatarLabel": "NE"
+    },
+    "gallery": ["Street Front", "Hall", "Bedroom"],
+    "coordinate": {
+      "latitude": 6.4497,
+      "longitude": 7.5102
+    }
+  },
+  {
+    "id": "ede-redeemer-gardens",
+    "title": "Redeemer Gardens",
+    "price": "NGN 320k / year",
+    "beds": 1,
+    "baths": 1,
+    "size": 72,
+    "rentalType": "Self Contain",
+    "area": "Ede, Osun",
+    "distance": "0.8 km",
+    "availability": "Available now",
+    "isAvailable": true,
+    "hasSolar": false,
+    "growthPrediction": "Expected 10% rent growth within the next 2 to 3 years.",
+    "landlord": {
+      "name": "Kehinde Adetola",
+      "phone": "09011223344",
+      "avatarLabel": "KA"
+    },
+    "gallery": ["Front View", "Room Interior", "Kitchenette"],
+    "coordinate": {
+      "latitude": 7.733,
+      "longitude": 4.437
+    }
+  },
+  {
+    "id": "uyo-shelter-afrique",
+    "title": "Shelter Afrique Suites",
+    "price": "NGN 2.4M / year",
+    "beds": 3,
+    "baths": 3,
+    "size": 118,
+    "rentalType": "3 Bedroom Flat",
+    "area": "Shelter Afrique, Uyo",
+    "distance": "1.5 km",
+    "availability": "Ready for occupancy",
+    "isAvailable": true,
+    "hasSolar": true,
+    "growthPrediction": "Projected 16% rental growth in the next 2 to 3 years.",
+    "landlord": {
+      "name": "Iniobong Udo",
+      "phone": "08155664433",
+      "avatarLabel": "IU"
+    },
+    "gallery": ["Estate Road", "Living Room", "Master Bedroom"],
+    "coordinate": {
+      "latitude": 5.0383,
+      "longitude": 7.9292
+    }
+  }
+]
