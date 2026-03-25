@@ -50,7 +50,7 @@ function RootNavigator() {
         <View style={styles.loadingScreen}>
           <ActivityIndicator color={palette.accent} size="large" />
           <Text style={styles.loadingTitle}>Easyhome</Text>
-          <Text style={styles.loadingSubtitle}>Loading your session...</Text>
+          <Text style={styles.loadingSubtitle}>Loading your account...</Text>
         </View>
       ) : (
         <Stack screenOptions={{ headerShown: false }}>

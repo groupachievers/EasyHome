@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Href, useRouter } from 'expo-router';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import InputField from '../components/InputField';
 import { Colors, Fonts } from '@/constants/theme';
@@ -32,8 +33,8 @@ export default function SignupScreen() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPickingImage, setIsPickingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,7 +45,6 @@ export default function SignupScreen() {
 
     if (!permission.granted) {
       setIsPickingImage(false);
-      setSuccessMessage(null);
       setErrorMessage('Allow gallery access to choose a profile picture.');
       return;
     }
@@ -52,7 +52,7 @@ export default function SignupScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       quality: 0.7,
       selectionLimit: 1,
     });
@@ -76,14 +76,12 @@ export default function SignupScreen() {
 
   const handleSignup = async () => {
     if (!avatarUrl.trim() || !name.trim() || !phone.trim() || !email.trim() || !password) {
-      setSuccessMessage(null);
       setErrorMessage('Profile picture, name, phone number, email, and password are all required.');
       return;
     }
 
     setIsSubmitting(true);
     setErrorMessage(null);
-    setSuccessMessage(null);
 
     const error = await signUp({
       avatarUrl,
@@ -97,10 +95,7 @@ export default function SignupScreen() {
 
     if (error) {
       setErrorMessage(error);
-      return;
     }
-
-    setSuccessMessage('Account created. If email confirmation is enabled, verify your email and then log in.');
   };
 
   return (
@@ -173,12 +168,25 @@ export default function SignupScreen() {
               label="Password"
               onChangeText={setPassword}
               placeholder="Create a password"
-              secureTextEntry
+              rightAdornment={
+                <Pressable
+                  accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+                  accessibilityRole="button"
+                  hitSlop={10}
+                  onPress={() => setIsPasswordVisible((current) => !current)}
+                  style={styles.passwordToggle}>
+                  <MaterialIcons
+                    color={palette.muted}
+                    name={isPasswordVisible ? 'visibility' : 'visibility-off'}
+                    size={22}
+                  />
+                </Pressable>
+              }
+              secureTextEntry={!isPasswordVisible}
               value={password}
             />
 
             {errorMessage ? <Text style={styles.errorBanner}>{errorMessage}</Text> : null}
-            {successMessage ? <Text style={styles.successBanner}>{successMessage}</Text> : null}
 
             <Pressable
               disabled={isSubmitting}
@@ -297,16 +305,6 @@ function createStyles(palette: typeof Colors.light) {
       paddingHorizontal: 14,
       paddingVertical: 12,
     },
-    successBanner: {
-      backgroundColor: '#DCFCE7',
-      borderRadius: 18,
-      color: '#166534',
-      fontSize: 13,
-      lineHeight: 20,
-      marginTop: 8,
-      paddingHorizontal: 14,
-      paddingVertical: 12,
-    },
     primaryButton: {
       alignItems: 'center',
       backgroundColor: palette.text,
@@ -331,6 +329,12 @@ function createStyles(palette: typeof Colors.light) {
       color: palette.text,
       fontFamily: Fonts.rounded,
       fontSize: 14,
+    },
+    passwordToggle: {
+      alignItems: 'center',
+      height: 24,
+      justifyContent: 'center',
+      width: 24,
     },
   });
 }

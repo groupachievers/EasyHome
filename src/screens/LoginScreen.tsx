@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Href, useRouter } from 'expo-router';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import InputField from '../components/InputField';
 import { Colors, Fonts } from '@/constants/theme';
@@ -25,6 +26,7 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -75,7 +77,21 @@ export default function LoginScreen() {
               label="Password"
               onChangeText={setPassword}
               placeholder="Enter your password"
-              secureTextEntry
+              rightAdornment={
+                <Pressable
+                  accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+                  accessibilityRole="button"
+                  hitSlop={10}
+                  onPress={() => setIsPasswordVisible((current) => !current)}
+                  style={styles.passwordToggle}>
+                  <MaterialIcons
+                    color={palette.muted}
+                    name={isPasswordVisible ? 'visibility' : 'visibility-off'}
+                    size={22}
+                  />
+                </Pressable>
+              }
+              secureTextEntry={!isPasswordVisible}
               value={password}
             />
 
@@ -178,6 +194,11 @@ function createStyles(palette: typeof Colors.light) {
       fontFamily: Fonts.rounded,
       fontSize: 14,
     },
+    passwordToggle: {
+      alignItems: 'center',
+      height: 24,
+      justifyContent: 'center',
+      width: 24,
+    },
   });
 }
-

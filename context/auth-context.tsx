@@ -1,15 +1,15 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
 
 import {
   AuthProfileInput,
+  AuthUser,
   SignUpCredentials,
+  hydrateAuth,
   login as loginWithPassword,
   logout as logoutUser,
   signUp as registerUser,
   updateProfile as updateUserProfile,
 } from '@/src/auth/authFunctions';
-import { supabase } from '@/src/api/supabaseClient';
 
 export type AuthProfile = {
   avatarUrl: string;
@@ -24,28 +24,23 @@ type AuthContextValue = {
   login: (email: string, password: string) => Promise<string | null>;
   logout: () => Promise<string | null>;
   profile: AuthProfile | null;
-  session: Session | null;
   signUp: (credentials: SignUpCredentials) => Promise<string | null>;
   updateProfile: (profile: AuthProfileInput) => Promise<string | null>;
-  user: User | null;
+  user: AuthUser | null;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function getMetadataValue(value: unknown) {
-  return typeof value === 'string' ? value : '';
-}
-
-function buildProfile(user: User | null): AuthProfile | null {
+function buildProfile(user: AuthUser | null): AuthProfile | null {
   if (!user) {
     return null;
   }
 
   return {
-    avatarUrl: getMetadataValue(user.user_metadata?.avatar_url),
-    email: user.email ?? '',
-    name: getMetadataValue(user.user_metadata?.full_name),
-    phone: getMetadataValue(user.user_metadata?.phone),
+    avatarUrl: user.avatarUrl,
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
   };
 }
 
@@ -59,42 +54,27 @@ function isProfileComplete(profile: AuthProfile | null) {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
-    const hydrateSession = async () => {
-      const { data } = await supabase.auth.getSession();
+    const hydrateUser = async () => {
+      const { user: hydratedUser } = await hydrateAuth();
 
       if (!isMounted) {
         return;
       }
 
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+      setUser(hydratedUser);
       setLoading(false);
     };
 
-    hydrateSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (!isMounted) {
-        return;
-      }
-
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-      setLoading(false);
-    });
+    hydrateUser();
 
     return () => {
       isMounted = false;
-      subscription.unsubscribe();
     };
   }, []);
 
@@ -106,23 +86,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       hasCompleteProfile,
       loading,
       login: async (email, password) => {
-        const { error } = await loginWithPassword(email, password);
+        const { error, user: nextUser } = await loginWithPassword(email, password);
+
+        if (!error) {
+          setUser(nextUser);
+        }
+
         return error;
       },
-      logout: async () => logoutUser(),
+      logout: async () => {
+        const error = await logoutUser();
+
+        if (!error) {
+          setUser(null);
+        }
+
+        return error;
+      },
       profile,
-      session,
       signUp: async (credentials) => {
-        const { error } = await registerUser(credentials);
+        const { error, user: nextUser } = await registerUser(credentials);
+
+        if (!error) {
+          setUser(nextUser);
+        }
+
         return error;
       },
       updateProfile: async (nextProfile) => {
-        const { error } = await updateUserProfile(nextProfile);
+        const { error, user: nextUser } = await updateUserProfile(nextProfile);
+
+        if (!error) {
+          setUser(nextUser);
+        }
+
         return error;
       },
       user,
     }),
-    [hasCompleteProfile, loading, profile, session, user]
+    [hasCompleteProfile, loading, profile, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

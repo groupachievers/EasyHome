@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -19,6 +19,7 @@ type Props = TextInputProps & {
   helperText?: string;
   inputStyle?: StyleProp<TextStyle>;
   label: string;
+  rightAdornment?: ReactNode;
 };
 
 export default function InputField({
@@ -27,21 +28,36 @@ export default function InputField({
   helperText,
   inputStyle,
   label,
+  rightAdornment,
   ...props
 }: Props) {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme];
   const styles = createStyles(palette);
+  const isMultiline = Boolean(props.multiline);
 
   return (
     <View style={containerStyle}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
-        keyboardAppearance={colorScheme === 'dark' ? 'dark' : 'light'}
-        placeholderTextColor={palette.muted}
-        style={[styles.input, error ? styles.inputError : null, inputStyle]}
-        {...props}
-      />
+      <View
+        style={[
+          styles.inputShell,
+          isMultiline ? styles.inputShellMultiline : null,
+          error ? styles.inputShellError : null,
+        ]}>
+        <TextInput
+          keyboardAppearance={colorScheme === 'dark' ? 'dark' : 'light'}
+          placeholderTextColor={palette.muted}
+          style={[
+            styles.input,
+            isMultiline ? styles.inputMultiline : null,
+            rightAdornment ? styles.inputWithAdornment : null,
+            inputStyle,
+          ]}
+          {...props}
+        />
+        {rightAdornment ? <View style={styles.rightAdornment}>{rightAdornment}</View> : null}
+      </View>
       {error || helperText ? (
         <Text style={[styles.helperText, error ? styles.errorText : null]}>
           {error ?? helperText}
@@ -60,18 +76,38 @@ function createStyles(palette: typeof Colors.light) {
       marginBottom: 10,
       marginTop: 4,
     },
-    input: {
+    inputShell: {
+      alignItems: 'center',
       backgroundColor: palette.surface,
       borderColor: 'transparent',
       borderRadius: 24,
       borderWidth: 1,
+      flexDirection: 'row',
+    },
+    inputShellMultiline: {
+      alignItems: 'flex-start',
+    },
+    inputShellError: {
+      borderColor: '#DC2626',
+    },
+    input: {
       color: palette.text,
+      flex: 1,
       fontSize: 16,
       paddingHorizontal: 18,
       paddingVertical: 16,
     },
-    inputError: {
-      borderColor: '#DC2626',
+    inputMultiline: {
+      minHeight: 120,
+      textAlignVertical: 'top',
+    },
+    inputWithAdornment: {
+      paddingRight: 10,
+    },
+    rightAdornment: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingRight: 18,
     },
     helperText: {
       color: palette.muted,

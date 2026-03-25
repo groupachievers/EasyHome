@@ -71,18 +71,7 @@ export default function TabLayout() {
           ),
         }}
       />
-        <Tabs.Screen
-        name="payments"
-        options={{
-          title: 'Payments',
-          tabBarIcon: ({ focused }) => (
-            <MapPinIcon
-              size={21}
-              fill={focused ? palette.tabIconSelected : palette.tabIconDefault}
-            />
-          ),
-        }}
-      />
+       
     </Tabs>
   );
 }
