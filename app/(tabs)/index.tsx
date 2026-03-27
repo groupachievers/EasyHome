@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   FlatList,
+  InteractionManager,
   LayoutChangeEvent,
   PanResponder,
   Platform,
@@ -16,7 +17,8 @@ import {
   View,
   NativeSyntheticEvent,
 } from 'react-native';
-import MapView, { Marker, Region } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
+import type { Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MapPinIcon, SearchIcon, StarIcon } from '@/components/ui/app-icons';
@@ -237,6 +239,7 @@ export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [region, setRegion] = useState<Region>(NIGERIA_REGION);
   const [selectedHomeId, setSelectedHomeId] = useState<string | null>(null);
+  const [shouldMountNativeMap, setShouldMountNativeMap] = useState(Platform.OS === 'web');
   const lastSearchTargetRef = useRef<string | null>(null);
 
   const selectedHome = useMemo(
@@ -264,6 +267,20 @@ export default function SearchScreen() {
       detailSheetHeight.removeListener(detailListenerId);
     };
   }, [detailSheetHeight, listSheetHeight]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const task = InteractionManager.runAfterInteractions(() => {
+      setShouldMountNativeMap(true);
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, []);
 
   const homesInView = useMemo(
     () => HOME_LISTINGS.filter((home) => isHomeInRegion(home, region)),
@@ -470,14 +487,20 @@ export default function SearchScreen() {
     detailSheetHeight.setValue(nextDetailHeight);
   };
 
+  const canShowNativeMap = Platform.OS !== 'web' && shouldMountNativeMap;
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.container} onLayout={onContainerLayout}>
-        {Platform.OS === 'web' ? (
-          <View style={styles.webFallback}>
-            <Text style={styles.webFallbackTitle}>Map preview is available on Android and iOS.</Text>
-            <Text style={styles.webFallbackText}>
-              The draggable sheet still reflects the homes available in the current search result.
+        {!canShowNativeMap ? (
+          <View style={styles.mapFallback}>
+            <Text style={styles.mapFallbackTitle}>
+              {Platform.OS === 'web' ? 'Map preview is available on Android and iOS.' : 'Loading map preview...'}
+            </Text>
+            <Text style={styles.mapFallbackText}>
+              {Platform.OS === 'web'
+                ? 'The draggable sheet still reflects the homes available in the current search result.'
+                : 'The homes list is ready below while the native map finishes mounting.'}
             </Text>
           </View>
         ) : (
@@ -735,6 +758,26 @@ function createStyles(palette: typeof Colors.light) {
       justifyContent: 'center',
       backgroundColor: palette.background,
       paddingHorizontal: 24,
+    },
+    mapFallback: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: 'center',
+      backgroundColor: palette.background,
+      justifyContent: 'center',
+      paddingHorizontal: 24,
+    },
+    mapFallbackTitle: {
+      color: palette.text,
+      fontFamily: Fonts.rounded,
+      fontSize: 22,
+      textAlign: 'center',
+    },
+    mapFallbackText: {
+      color: palette.muted,
+      fontSize: 14,
+      lineHeight: 22,
+      marginTop: 10,
+      textAlign: 'center',
     },
     webFallbackTitle: {
       color: palette.text,
@@ -1098,6 +1141,15 @@ function createStyles(palette: typeof Colors.light) {
       borderRadius: 26,
       height: 52,
       width: 52,
+    },
+    landlordAvatarFallback: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    landlordAvatarText: {
+      color: palette.text,
+      fontFamily: Fonts.rounded,
+      fontSize: 16,
     },
     landlordInfo: {
       marginLeft: 14,

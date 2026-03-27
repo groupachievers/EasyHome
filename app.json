@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "easyhome",
+    "name": "Easyhome",
     "slug": "easyhome",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "easyhome",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true
     },

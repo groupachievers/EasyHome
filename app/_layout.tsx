@@ -1,9 +1,10 @@
+import 'react-native-reanimated';
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Href, Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import 'react-native-reanimated';
 
 import { AppPreferencesProvider, useAppPreferences } from '@/context/app-preferences';
 import { AuthProvider, useAuth } from '@/context/auth-context';
@@ -44,29 +45,56 @@ function RootNavigator() {
     }
   }, [hasCompleteProfile, inAuthGroup, loading, onProfileScreen, router, segmentKey, user]);
 
+  const renderLoadingScreen = (subtitle: string) => (
+    <View style={styles.loadingScreen}>
+      <ActivityIndicator color={palette.accent} size="large" />
+      <Text style={styles.loadingTitle}>Easyhome</Text>
+      <Text style={styles.loadingSubtitle}>{subtitle}</Text>
+    </View>
+  );
+
+  let content;
+
+  if (loading) {
+    content = renderLoadingScreen('Loading your account...');
+  } else if (!user) {
+    content = inAuthGroup ? (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+      </Stack>
+    ) : (
+      renderLoadingScreen('Opening sign in...')
+    );
+  } else if (!hasCompleteProfile) {
+    content = onProfileScreen ? (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+      </Stack>
+    ) : (
+      renderLoadingScreen('Opening your profile setup...')
+    );
+  } else if (inAuthGroup) {
+    content = renderLoadingScreen('Opening your homes...');
+  } else {
+    content = (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="payment/[homeId]"
+          options={{
+            animation: 'fade',
+            contentStyle: { backgroundColor: 'transparent' },
+            gestureEnabled: true,
+            presentation: 'transparentModal',
+          }}
+        />
+      </Stack>
+    );
+  }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {loading ? (
-        <View style={styles.loadingScreen}>
-          <ActivityIndicator color={palette.accent} size="large" />
-          <Text style={styles.loadingTitle}>Easyhome</Text>
-          <Text style={styles.loadingSubtitle}>Loading your account...</Text>
-        </View>
-      ) : (
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="payment/[homeId]"
-            options={{
-              animation: 'fade',
-              contentStyle: { backgroundColor: 'transparent' },
-              gestureEnabled: true,
-              presentation: 'transparentModal',
-            }}
-          />
-        </Stack>
-      )}
+      {content}
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );
