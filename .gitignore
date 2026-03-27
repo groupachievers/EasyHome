@@ -43,7 +43,4 @@ app-example
 /android
 .env
 backend/.env
-
 backend/
-frontend/
-

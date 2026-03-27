@@ -35,7 +35,12 @@ const NIGERIA_REGION: Region = {
 };
 
 const FILTER_CHIPS = ['Any budget', '2+ beds', 'Furnished', 'Move now'];
-const PLACEHOLDER_IMAGE = require('@/assets/images/icon.png');
+const HOME_IMAGE_SOURCES = [
+  require('@/assets/images/homes/minh-pham-OtXADkUh3-I-unsplash.jpg'),
+  require('@/assets/images/homes/sarah-dorweiler-0QmzQZndkOQ-unsplash.jpg'),
+  require('@/assets/images/homes/spacejoy-hWwP4LTGEQA-unsplash.jpg'),
+  require('@/assets/images/homes/spacejoy-RqO6kwm4tZY-unsplash.jpg'),
+] as const;
 const TAB_BAR_CLEARANCE = 0;
 const GALLERY_TONES = ['#CFE8E4', '#ECDDCF', '#DDE7F5'];
 const SEARCH_REGION_DELTA = 0.45;
@@ -168,6 +173,14 @@ function getRegionLabel(region: Region) {
   }
 
   return 'this area';
+}
+
+function getHomeImageSource(homeId: string, galleryIndex = 0) {
+  const baseIndex =
+    homeId.split('').reduce((total, character) => total + character.charCodeAt(0), 0) %
+    HOME_IMAGE_SOURCES.length;
+
+  return HOME_IMAGE_SOURCES[(baseIndex + galleryIndex) % HOME_IMAGE_SOURCES.length];
 }
 
 function getQueryDestination(query: string) {
@@ -627,7 +640,7 @@ export default function SearchScreen() {
                         { backgroundColor: GALLERY_TONES[index % GALLERY_TONES.length] },
                       ]}>
                       <Image
-                        source={PLACEHOLDER_IMAGE}
+                        source={getHomeImageSource(selectedHome.id, index)}
                         style={styles.galleryImage}
                         contentFit="cover"
                       />
@@ -669,11 +682,9 @@ export default function SearchScreen() {
                 </View>
 
                 <View style={styles.landlordCard}>
-                  <Image
-                    source={PLACEHOLDER_IMAGE}
-                    style={styles.landlordAvatar}
-                    contentFit="cover"
-                  />
+                  <View style={[styles.landlordAvatar, styles.landlordAvatarFallback]}>
+                    <Text style={styles.landlordAvatarText}>{selectedHome.landlord.avatarLabel}</Text>
+                  </View>
                   <View style={styles.landlordInfo}>
                     <Text style={styles.landlordLabel}>Landlord / Landlady</Text>
                     <Text style={styles.landlordName}>{selectedHome.landlord.name}</Text>
@@ -1010,11 +1021,11 @@ function createStyles(palette: typeof Colors.light) {
     },
     galleryImage: {
       ...StyleSheet.absoluteFillObject,
-      opacity: 0.38,
+      opacity: 1,
     },
     galleryOverlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: '#11182733',
+      backgroundColor: '#11182740',
     },
     galleryLabel: {
       color: '#FFFFFF',
