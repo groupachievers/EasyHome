@@ -56,6 +56,15 @@ function RootNavigator() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="payment/[homeId]"
+            options={{
+              animation: 'fade',
+              contentStyle: { backgroundColor: 'transparent' },
+              gestureEnabled: true,
+              presentation: 'transparentModal',
+            }}
+          />
         </Stack>
       )}
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
@@ -95,4 +104,3 @@ function createStyles(palette: typeof Colors.light) {
     },
   });
 }
-

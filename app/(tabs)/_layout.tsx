@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { MenuBurgerIcon, SearchIcon, StarIcon, MapPinIcon } from '@/components/ui/app-icons';
+import { MenuBurgerIcon, SearchIcon, StarIcon } from '@/components/ui/app-icons';
 import { Colors, Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -75,3 +75,4 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+

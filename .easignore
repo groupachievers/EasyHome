@@ -1,0 +1,11 @@
+node_modules
+backend
+frontend
+.git
+.gitignore
+.env*
+*.log
+*.zip
+*.tar.gz
+*.mp4
+*.mov

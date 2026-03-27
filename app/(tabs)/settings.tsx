@@ -57,9 +57,6 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Menu</Text>
-        <Text style={styles.subtitle}>
-          Samsung One UI-inspired preferences for account details, theme, and sign-out.
-        </Text>
 
         <View style={styles.heroCard}>
           <Image

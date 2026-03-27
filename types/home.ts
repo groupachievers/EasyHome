@@ -2,6 +2,7 @@ export type HomeListing = {
   id: string;
   title: string;
   price: string;
+  annualRentKobo: number;
   beds: number;
   baths: number;
   size: number;

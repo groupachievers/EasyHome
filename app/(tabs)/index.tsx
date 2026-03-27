@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-
+import { Href, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
@@ -203,6 +203,7 @@ export default function SearchScreen() {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme];
   const styles = createStyles(palette);
+  const router = useRouter();
   const { isFavorite, toggleFavorite } = useAppPreferences();
   const { profile } = useAuth();
   const mapRef = useRef<MapView>(null);
@@ -681,12 +682,11 @@ export default function SearchScreen() {
                 </View>
 
                 <Pressable
-                  disabled={!selectedHome.isAvailable}
+                  onPress={() => router.push(`/payment/${selectedHome.id}` as Href)}
                   style={[
                     styles.rentButton,
                     styles.rentButtonBase,
                     colorScheme === 'dark' ? styles.rentButtonDark : styles.rentButtonLight,
-                    !selectedHome.isAvailable && styles.rentButtonDisabled,
                   ]}>
                   <Text
                     style={[
@@ -1122,9 +1122,6 @@ function createStyles(palette: typeof Colors.light) {
     rentButtonDark: {
       backgroundColor: '#FFFFFF',
     },
-    rentButtonDisabled: {
-      opacity: 0.45,
-    },
     rentButtonText: {
       fontFamily: Fonts.rounded,
       fontSize: 16,
@@ -1152,6 +1149,15 @@ function colorWithAlpha(hex: string, opacity: number) {
 
   return `#${safeHex}${alpha}`;
 }
+
+
+
+
+
+
+
+
+
 
 
 
