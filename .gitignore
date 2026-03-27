@@ -44,3 +44,5 @@ app-example
 .env
 backend/.env
 backend/
+release-artifacts/
+dist-android-check/

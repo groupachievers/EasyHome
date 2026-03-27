@@ -35,3 +35,5 @@ backend/
 *.mov
 .vscode/
 *.bak
+release-artifacts/
+dist-android-check/
