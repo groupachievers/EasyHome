@@ -17,11 +17,11 @@ import {
   View,
   NativeSyntheticEvent,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import type { Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { MapPinIcon, SearchIcon, StarIcon } from '@/components/ui/app-icons';
+import HomeMap from '@/components/search/home-map';
+import type { HomeMapHandle, HomeMapRegion } from '@/components/search/home-map.types';
+import { SearchIcon, StarIcon } from '@/components/ui/app-icons';
 import { useAppPreferences } from '@/context/app-preferences';
 import { useAuth } from '@/src/hooks/useAuth';
 import { HOME_LISTINGS } from '@/constants/homes';
@@ -29,7 +29,7 @@ import { Colors, Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { HomeListing } from '@/types/home';
 
-const NIGERIA_REGION: Region = {
+const NIGERIA_REGION: HomeMapRegion = {
   latitude: 9.082,
   longitude: 8.6753,
   latitudeDelta: 10.8,
@@ -50,7 +50,7 @@ const SEARCH_REGION_DELTA = 0.45;
 const POPULAR_DESTINATIONS: {
   id: string;
   keywords: string[];
-  region: Region;
+  region: HomeMapRegion;
 }[] = [
   {
     id: 'lagos',
@@ -138,7 +138,7 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-function isHomeInRegion(home: HomeListing, region: Region) {
+function isHomeInRegion(home: HomeListing, region: HomeMapRegion) {
   const latitudeMin = region.latitude - region.latitudeDelta / 2;
   const latitudeMax = region.latitude + region.latitudeDelta / 2;
   const longitudeMin = region.longitude - region.longitudeDelta / 2;
@@ -169,7 +169,7 @@ function matchesQuery(home: HomeListing, query: string) {
   ].some((value) => value.toLowerCase().includes(normalizedQuery));
 }
 
-function getRegionLabel(region: Region) {
+function getRegionLabel(region: HomeMapRegion) {
   if (region.latitudeDelta > 6) {
     return 'Nigeria';
   }
@@ -221,7 +221,7 @@ export default function SearchScreen() {
   const router = useRouter();
   const { isFavorite, toggleFavorite } = useAppPreferences();
   const { profile } = useAuth();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<HomeMapHandle>(null);
 
   const listSheetHeight = useRef(new Animated.Value(0)).current;
   const detailSheetHeight = useRef(new Animated.Value(0)).current;
@@ -237,9 +237,9 @@ export default function SearchScreen() {
   const initializedListSheet = useRef(false);
 
   const [query, setQuery] = useState('');
-  const [region, setRegion] = useState<Region>(NIGERIA_REGION);
+  const [region, setRegion] = useState<HomeMapRegion>(NIGERIA_REGION);
   const [selectedHomeId, setSelectedHomeId] = useState<string | null>(null);
-  const [shouldMountNativeMap, setShouldMountNativeMap] = useState(Platform.OS === 'web');
+  const [shouldMountNativeMap, setShouldMountNativeMap] = useState(false);
   const lastSearchTargetRef = useRef<string | null>(null);
 
   const selectedHome = useMemo(
@@ -303,7 +303,13 @@ export default function SearchScreen() {
     }
 
     lastSearchTargetRef.current = searchKey;
-    mapRef.current?.animateToRegion(destination, 450);
+
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(destination, 450);
+      return;
+    }
+
+    setRegion(destination);
   };
 
   useEffect(() => {
@@ -351,15 +357,18 @@ export default function SearchScreen() {
 
   const openHomeDetails = (home: HomeListing) => {
     setSelectedHomeId(home.id);
-    mapRef.current?.animateToRegion(
-      {
-        latitude: home.coordinate.latitude,
-        longitude: home.coordinate.longitude,
-        latitudeDelta: 0.2,
-        longitudeDelta: 0.2,
-      },
-      300
-    );
+    const destination = {
+      latitude: home.coordinate.latitude,
+      longitude: home.coordinate.longitude,
+      latitudeDelta: 0.2,
+      longitudeDelta: 0.2,
+    };
+
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(destination, 300);
+    } else {
+      setRegion(destination);
+    }
 
     if (detailSnapHeights.current.mid > 0) {
       animateDetailSheetTo(detailSnapHeights.current.mid);
@@ -504,31 +513,18 @@ export default function SearchScreen() {
             </Text>
           </View>
         ) : (
-          <MapView
+          <HomeMap
             ref={mapRef}
             style={styles.map}
             initialRegion={NIGERIA_REGION}
+            homes={visibleHomes}
             onRegionChangeComplete={setRegion}
-            showsCompass
-            showsBuildings
-            toolbarEnabled={false}>
-            {visibleHomes.map((home) => {
-              const markerColor = selectedHomeId === home.id ? palette.tabIconSelected : palette.accent;
-
-              return (
-                <Marker
-                  key={home.id}
-                  coordinate={home.coordinate}
-                  title={home.title}
-                  description={`${home.price} | ${home.rentalType} | ${home.area}`}
-                  onPress={() => openHomeDetails(home)}>
-                  <View style={styles.markerWrap}>
-                    <MapPinIcon size={34} fill={markerColor} />
-                  </View>
-                </Marker>
-              );
-            })}
-          </MapView>
+            onSelectHome={openHomeDetails}
+            selectedHomeId={selectedHomeId}
+            defaultMarkerColor={palette.accent}
+            selectedMarkerColor={palette.tabIconSelected}
+            markerShadowColor={palette.shadow}
+          />
         )}
 
         <View style={styles.topOverlay} pointerEvents="box-none">
@@ -858,14 +854,6 @@ function createStyles(palette: typeof Colors.light) {
       color: palette.text,
       fontFamily: Fonts.rounded,
       fontSize: 13,
-    },
-    markerWrap: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      shadowColor: palette.shadow,
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.25,
-      shadowRadius: 10,
     },
     sheet: {
       backgroundColor: palette.sheet,
@@ -1212,6 +1200,8 @@ function colorWithAlpha(hex: string, opacity: number) {
 
   return `#${safeHex}${alpha}`;
 }
+
+
 
 
 
