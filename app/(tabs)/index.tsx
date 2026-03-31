@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { Href, useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Component, ErrorInfo, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   FlatList,
@@ -214,6 +214,39 @@ function getQueryDestination(query: string) {
   };
 }
 
+type HomeMapErrorBoundaryProps = {
+  children: ReactNode;
+  onError: () => void;
+};
+
+type HomeMapErrorBoundaryState = {
+  hasError: boolean;
+};
+
+class HomeMapErrorBoundary extends Component<HomeMapErrorBoundaryProps, HomeMapErrorBoundaryState> {
+  state: HomeMapErrorBoundaryState = {
+    hasError: false,
+  };
+
+  static getDerivedStateFromError() {
+    return {
+      hasError: true,
+    };
+  }
+
+  componentDidCatch(_error: unknown, _info: ErrorInfo) {
+    this.props.onError();
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null;
+    }
+
+    return this.props.children;
+  }
+}
+
 export default function SearchScreen() {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme];
@@ -240,6 +273,7 @@ export default function SearchScreen() {
   const [region, setRegion] = useState<HomeMapRegion>(NIGERIA_REGION);
   const [selectedHomeId, setSelectedHomeId] = useState<string | null>(null);
   const [shouldMountNativeMap, setShouldMountNativeMap] = useState(false);
+  const [hasMapError, setHasMapError] = useState(false);
   const lastSearchTargetRef = useRef<string | null>(null);
 
   const selectedHome = useMemo(
@@ -496,7 +530,7 @@ export default function SearchScreen() {
     detailSheetHeight.setValue(nextDetailHeight);
   };
 
-  const canShowNativeMap = Platform.OS !== 'web' && shouldMountNativeMap;
+  const canShowNativeMap = Platform.OS !== 'web' && shouldMountNativeMap && !hasMapError;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -504,27 +538,35 @@ export default function SearchScreen() {
         {!canShowNativeMap ? (
           <View style={styles.mapFallback}>
             <Text style={styles.mapFallbackTitle}>
-              {Platform.OS === 'web' ? 'Map preview is available on Android and iOS.' : 'Loading map preview...'}
+              {hasMapError
+                ? 'Map preview is unavailable right now.'
+                : Platform.OS === 'web'
+                  ? 'Map preview is available on Android and iOS.'
+                  : 'Loading map preview...'}
             </Text>
             <Text style={styles.mapFallbackText}>
-              {Platform.OS === 'web'
-                ? 'The draggable sheet still reflects the homes available in the current search result.'
-                : 'The homes list is ready below while the native map finishes mounting.'}
+              {hasMapError
+                ? 'The homes list below is still available, so you can continue browsing and renting.'
+                : Platform.OS === 'web'
+                  ? 'The draggable sheet still reflects the homes available in the current search result.'
+                  : 'The homes list is ready below while the native map finishes mounting.'}
             </Text>
           </View>
         ) : (
-          <HomeMap
-            ref={mapRef}
-            style={styles.map}
-            initialRegion={NIGERIA_REGION}
-            homes={visibleHomes}
-            onRegionChangeComplete={setRegion}
-            onSelectHome={openHomeDetails}
-            selectedHomeId={selectedHomeId}
-            defaultMarkerColor={palette.accent}
-            selectedMarkerColor={palette.tabIconSelected}
-            markerShadowColor={palette.shadow}
-          />
+          <HomeMapErrorBoundary onError={() => setHasMapError(true)}>
+            <HomeMap
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={NIGERIA_REGION}
+              homes={visibleHomes}
+              onRegionChangeComplete={setRegion}
+              onSelectHome={openHomeDetails}
+              selectedHomeId={selectedHomeId}
+              defaultMarkerColor={palette.accent}
+              selectedMarkerColor={palette.tabIconSelected}
+              markerShadowColor={palette.shadow}
+            />
+          </HomeMapErrorBoundary>
         )}
 
         <View style={styles.topOverlay} pointerEvents="box-none">
