@@ -1,7 +1,7 @@
 {
   "name": "easyhome",
   "main": "index.js",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "scripts": {
     "start": "set EXPO_NO_CACHE=1&& expo start --clear",
     "reset-project": "node ./scripts/reset-project.js",
@@ -58,3 +58,4 @@
   },
   "private": true
 }
+

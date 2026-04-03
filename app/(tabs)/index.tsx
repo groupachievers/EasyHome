@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import Constants from 'expo-constants';
 import { Href, useRouter } from 'expo-router';
 import { Component, ErrorInfo, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -275,6 +276,9 @@ export default function SearchScreen() {
   const [shouldMountNativeMap, setShouldMountNativeMap] = useState(false);
   const [hasMapError, setHasMapError] = useState(false);
   const lastSearchTargetRef = useRef<string | null>(null);
+  const hasGoogleMapsApiKey = Boolean(Constants.expoConfig?.extra?.googleMapsApiKeyConfigured);
+  const shouldDisableAndroidNativeMap =
+    Platform.OS === 'android' && !__DEV__ && !hasGoogleMapsApiKey;
 
   const selectedHome = useMemo(
     () => HOME_LISTINGS.find((home) => home.id === selectedHomeId) ?? null,
@@ -530,7 +534,11 @@ export default function SearchScreen() {
     detailSheetHeight.setValue(nextDetailHeight);
   };
 
-  const canShowNativeMap = Platform.OS !== 'web' && shouldMountNativeMap && !hasMapError;
+  const canShowNativeMap =
+    Platform.OS !== 'web' &&
+    shouldMountNativeMap &&
+    !hasMapError &&
+    !shouldDisableAndroidNativeMap;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -538,18 +546,22 @@ export default function SearchScreen() {
         {!canShowNativeMap ? (
           <View style={styles.mapFallback}>
             <Text style={styles.mapFallbackTitle}>
-              {hasMapError
-                ? 'Map preview is unavailable right now.'
-                : Platform.OS === 'web'
-                  ? 'Map preview is available on Android and iOS.'
-                  : 'Loading map preview...'}
+              {shouldDisableAndroidNativeMap
+                ? 'Map preview is unavailable in this APK.'
+                : hasMapError
+                  ? 'Map preview is unavailable right now.'
+                  : Platform.OS === 'web'
+                    ? 'Map preview is available on Android and iOS.'
+                    : 'Loading map preview...'}
             </Text>
             <Text style={styles.mapFallbackText}>
-              {hasMapError
-                ? 'The homes list below is still available, so you can continue browsing and renting.'
-                : Platform.OS === 'web'
-                  ? 'The draggable sheet still reflects the homes available in the current search result.'
-                  : 'The homes list is ready below while the native map finishes mounting.'}
+              {shouldDisableAndroidNativeMap
+                ? 'This Android release does not include Google Maps configuration yet, but the homes list below is fully available.'
+                : hasMapError
+                  ? 'The homes list below is still available, so you can continue browsing and renting.'
+                  : Platform.OS === 'web'
+                    ? 'The draggable sheet still reflects the homes available in the current search result.'
+                    : 'The homes list is ready below while the native map finishes mounting.'}
             </Text>
           </View>
         ) : (
@@ -1242,23 +1254,3 @@ function colorWithAlpha(hex: string, opacity: number) {
 
   return `#${safeHex}${alpha}`;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

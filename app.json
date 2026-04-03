@@ -2,7 +2,7 @@
   "expo": {
     "name": "Easyhome",
     "slug": "easyhome",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "easyhome",
@@ -20,7 +20,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.easyhome.app"
+      "package": "com.easyhome.app",
+      "versionCode": 3
     },
     "web": {
       "output": "static",
@@ -54,3 +55,5 @@
     "owner": "hemingnit"
   }
 }
+
+
